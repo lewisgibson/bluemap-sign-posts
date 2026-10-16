@@ -1,0 +1,25 @@
+Third-Party Notices
+===================
+
+BlueMapSignPosts is licensed under the GNU General Public License, version 3
+(see LICENSE).
+
+The plugin ships as a single jar that contains only its own code. It runs
+against APIs the server provides and does not redistribute them:
+
+- Paper API (GPL-3.0), provided by the Paper, Purpur or Folia server.
+- BlueMapAPI (MIT), provided by the BlueMap plugin, a required dependency.
+- Adventure and MiniMessage (MIT), provided by Paper.
+
+It also uses the SQLite JDBC driver by Xerial (Apache-2.0), which Paper ships.
+
+For the PostgreSQL and MySQL stores, plugin.yml names three libraries that the
+server downloads from Maven Central when the plugin loads; they are not in the
+jar:
+
+- HikariCP (Apache-2.0).
+- PostgreSQL JDBC Driver (BSD-2-Clause).
+- MariaDB Connector/J (LGPL-2.1).
+
+The tools used to build and test the plugin (Gradle, JUnit, AssertJ, MockBukkit,
+JaCoCo, Spotless, JMH) are not part of what it ships.

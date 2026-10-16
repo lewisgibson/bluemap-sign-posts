@@ -1,0 +1,52 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# run-paper test server
+run/
+
+# Logs
+*.log
+
+# IDEs / editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.project
+.classpath
+bin/
+out/
+.vscode/
+
+# Local, machine-specific Claude settings (never commit).
+.claude/settings.local.json
+.claude/*.lock
+
+# One machine's agent notes (CLAUDE.md says to read them).
+AGENTS.local.md
+CLAUDE.local.md
+
+# Git worktrees
+.worktrees/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+hs_err_pid*
+replay_pid*
+
+# Node tooling (prettier pin for the hook and the Lint workflow)
+node_modules/
+
+# One machine's working notes; never committed.
+notes.local.md
+
+# Python
+__pycache__/
+.coverage

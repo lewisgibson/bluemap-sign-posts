@@ -1,0 +1,109 @@
+# ============================================================================
+#  BlueMapSignPosts
+#  A player writes a sign whose first line is the trigger and names a place on
+#  the lines under it, or places a banner they renamed in an anvil, and a marker
+#  with that name appears on the BlueMap web map at the block. Breaking the
+#  block removes it. Nothing about the game changes.
+# ============================================================================
+
+sign:
+    # The first line that marks a sign as a signpost request. Matched case-insensitively
+    # and ignoring surrounding spaces; the remaining lines become the marker's name.
+    trigger: '[map]'
+
+banners:
+    # Whether a banner carrying a custom name (renamed in an anvil) also becomes a signpost,
+    # labelled with that name. A banner keeps its name when placed and gives it back when
+    # broken, so nothing has to be written on it.
+    enabled: true
+
+# How long a player must have played before they can place a signpost. 0s disables the
+# gate. Units: d (days), h (hours), m (minutes), s (seconds). Compound values allowed,
+# e.g. '1d12h'. This is the vanilla play_time statistic, the same gate SpawnBuildRights uses.
+required-playtime: 0s
+
+# Players with this permission may place signposts (it defaults to everyone).
+create-permission: bluemapsignposts.create
+
+# Players with this permission skip the create permission, the playtime requirement and the limit.
+bypass-permission: bluemapsignposts.bypass
+
+limits:
+    # How many signposts one player may have on the map at once, unless something below says
+    # otherwise. 0 means no limit. Breaking one of their own signpost blocks frees a slot.
+    default: 10
+    # Operators have no limit. Setting this false only limits an operator who has also lost
+    # bluemapsignposts.bypass, which operators have by default and which skips the limit.
+    operators-unlimited: true
+    # Two more ways to raise or lower a player's limit, neither of which lives in this file:
+    #   - permission tiers: bluemapsignposts.limit.<n> (the highest held wins) and
+    #     bluemapsignposts.limit.unlimited, granted through your permissions plugin; and
+    #   - an admin override: /signposts limit set <player> <n|unlimited>, kept in the plugin's
+    #     own store beside the markers, so a config reload cannot lose it.
+    # An override beats every tier, a tier beats this default. /signposts limit <player>
+    # shows the effective limit and which of these decided it.
+
+marker-set:
+    # The layer name shown in the map's marker menu.
+    label: Signposts
+    # Whether map visitors can hide the layer, and whether it starts hidden.
+    toggleable: true
+    default-hidden: false
+
+marker:
+    # How far from the camera, in blocks, a marker is still drawn.
+    max-distance: 100000
+    # The popup shown when a marker is clicked. HTML; every placeholder is escaped first.
+    # Placeholders: %label%, %owner%, %world%, %x%, %y%, %z%.
+    # It can't be blank: BlueMap would then show the player's text as HTML.
+    detail: '%label%<br><small>placed by %owner%</small>'
+
+# Where the signposts and the limit overrides are kept. The default needs nothing set up: one
+# SQLite file in this folder. The store is read at startup and again when these settings change on
+# reload, and written on the plugin's own thread.
+storage:
+    # 'sqlite' (the default), 'postgres' or 'mysql' (MySQL or MariaDB).
+    type: sqlite
+    sqlite:
+        # Relative to plugins/BlueMapSignPosts/.
+        file: data.db
+    postgres:
+        host: localhost
+        port: 5432
+        database: bluemapsignposts
+        user: bluemapsignposts
+        password: ''
+        # Blank uses the user's default schema. The plugin creates its tables there on first start.
+        schema: ''
+        # TLS, as the PostgreSQL driver's sslmode: disable, allow, prefer (TLS when the server
+        # offers it), require (always TLS), verify-ca or verify-full (TLS, and the server's
+        # certificate must be signed by ssl-root-cert; verify-full also checks the host name).
+        ssl-mode: prefer
+        # The CA certificate for verify-ca and verify-full. Blank uses the driver's default,
+        # ~/.postgresql/root.crt for the user the server runs as.
+        ssl-root-cert: ''
+    mysql:
+        host: localhost
+        port: 3306
+        database: bluemapsignposts
+        user: bluemapsignposts
+        password: ''
+        # TLS, as the MariaDB driver's sslMode: disable, trust (TLS without checking the
+        # certificate), verify-ca or verify-full (TLS, and the server's certificate must be signed
+        # by ssl-ca-cert; verify-full also checks the host name).
+        ssl-mode: disable
+        # The CA certificate for verify-ca and verify-full. Blank uses Java's own trusted CAs.
+        ssl-ca-cert: ''
+
+# Player-facing messages. MiniMessage formatting is supported (https://docs.advntr.dev/minimessage/).
+# A blank message is not sent; a missing key means the line shipped here. Placeholders: %label%
+# (the marker name), %trigger% (the sign trigger), %required% / %played% / %remaining% (playtime),
+# %count% / %limit% (the per-player cap).
+messages:
+    created: '<green>Added to the map: <white>%label%</white></green>'
+    updated: '<green>Updated on the map: <white>%label%</white></green>'
+    removed: '<gray>Removed from the map: <white>%label%</white></gray>'
+    denied-permission: "<red>You can't add markers to the map.</red>"
+    denied-playtime: "<red>You need <white>%required%</white> of playtime to add markers to the map. You've played <white>%played%</white> - <white>%remaining%</white> to go.</red>"
+    denied-limit: '<red>You already have <white>%count%</white> markers on the map (the limit is <white>%limit%</white>). Break one of your signposts to free a slot.</red>'
+    empty-label: '<red>Write the name of the place on the lines under <white>%trigger%</white>.</red>'

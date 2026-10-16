@@ -1,0 +1,43 @@
+name: BlueMapSignPosts
+version: '${version}'
+main: com.lewisgibson.bluemapsignposts.bukkit.BlueMapSignPostsPlugin
+# A plugin.yml rather than a paper-plugin.yml, so the one jar loads on Paper, Purpur and Folia.
+api-version: '26.3'
+# Safe under Folia's regions: see "Folia" in docs/architecture.md.
+folia-supported: true
+# Without BlueMap the plugin does not load and the log says why, rather than running with no map.
+depend:
+    - BlueMap
+authors:
+    - lewisgibson
+description: Allows players to add BlueMap markers using signs and banners
+website: https://github.com/lewisgibson/bluemap-sign-posts
+
+# The connection pool and the drivers for the PostgreSQL and MySQL stores. Paper downloads them
+# from Maven Central the first time the plugin loads; the versions are filled in from
+# gradle/libs.versions.toml at build time. SQLite needs nothing here: Paper ships its driver.
+libraries:
+    - com.zaxxer:HikariCP:${hikari}
+    - org.postgresql:postgresql:${postgresql}
+    - org.mariadb.jdbc:mariadb-java-client:${mariadb}
+
+permissions:
+    bluemapsignposts.create:
+        description: Put signposts on the map, subject to the playtime requirement and the per-player limit.
+        default: true
+    bluemapsignposts.bypass:
+        description: Skip the create permission, the playtime requirement and the per-player limit.
+        default: op
+    bluemapsignposts.limit.unlimited:
+        description: No per-player limit. Operators have this through config (limits.operators-unlimited) rather than through this node.
+        default: false
+    bluemapsignposts.admin:
+        description: Manage every signpost and every limit - /bluemapsignposts list, remove, limit, reload, republish.
+        default: op
+
+commands:
+    bluemapsignposts:
+        description: View and manage BlueMapSignPosts.
+        usage: /bluemapsignposts <list|remove|limit|reload|republish>
+        aliases:
+            - signposts

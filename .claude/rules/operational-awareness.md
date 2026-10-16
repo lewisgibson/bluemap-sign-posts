@@ -1,0 +1,12 @@
+# Operational Awareness
+
+What the plugin can count on from the server it runs in, and what it promises back.
+
+- **A server-side jar that needs BlueMap.** It loads from a Paper, Purpur or Folia server's `plugins/` folder and depends on the BlueMap plugin. There is no client mod. Without BlueMap it does not load, and says so.
+- **Event-driven.** It runs when a player writes a sign, places a banner or breaks a block, and when a chunk loads. Only the last three happen at gameplay frequency, and each is one or two map lookups on the common path (`docs/performance.md`). It schedules nothing except the chunk-load check on Folia.
+- **It watches the game and never changes it.** Every handler is `MONITOR` priority and never cancels: the sign is written and the banner placed exactly as vanilla would, whether or not a marker results. A refusal costs the player a marker, not a block.
+- **BlueMap forgets API markers.** BlueMap starts every enable with empty marker sets and overwrites its saved markers from memory, so the plugin's own store is the record. Every stored signpost is published again in the `BlueMapAPI.onEnable` callback, which fires on server start and on every `/bluemap reload`. A store that cannot be read disables the plugin rather than start empty over it.
+- **The store is small and off the hot path.** SQLite by default in the plugin's folder, or PostgreSQL, MySQL or MariaDB. It holds the signposts and the admin limit overrides. It is read at startup and when the storage settings change; writes go to one plugin-owned thread that is drained on shutdown. SQLite uses the driver Paper ships; HikariCP and the PostgreSQL and MariaDB drivers come through `plugin.yml` `libraries:`, so the first start needs Maven Central.
+- **Config applies live.** `/signposts reload` rebuilds the runtime and publishes every marker again, without a restart. The store is written on every change, not on shutdown.
+- **Built once, runs on later versions.** It is built against a pinned Paper API and BlueMapAPI but uses only stable API. The weekly Upgrade Watch workflow boots it on the newest Paper and BlueMap and opens an issue if it ever fails.
+- **Releases are automatic.** A push to `main` whose version has no GitHub release yet publishes it to GitHub Releases, and to Modrinth and Hangar when their tokens are set, with the version's `CHANGELOG.md` entry as the notes (`docs/releasing.md`). A push that keeps the version publishes nothing.

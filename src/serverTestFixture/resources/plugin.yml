@@ -1,0 +1,14 @@
+name: BlueMapSignPostsTestFixture
+version: '0'
+main: com.lewisgibson.bluemapsignposts.fixture.TestFixturePlugin
+api-version: '26.3'
+description: Test-only. Fires real sign, banner and break events for a fake player and reads BlueMap's marker set back over RCON.
+# Load after the plugin under test so the events have a listener to reach, and after BlueMap so
+# its API classes resolve.
+softdepend:
+    - BlueMapSignPosts
+    - BlueMap
+commands:
+    bmsptest:
+        description: Test-only. /bmsptest <sign|banner|break|marker> <x> <y> <z> ...
+        usage: /bmsptest <sign|banner|break|marker> <x> <y> <z> ...
