@@ -4,10 +4,10 @@
 # Paper API for Minecraft 26.3, build 174, the newest on 2026-10-11. Paper's artifact
 # scheme since the 26.x boundary is "<mcver>.build.<n>-<channel>", not the old
 # "-R0.1-SNAPSHOT".
-paperApi = "26.3.build.174-beta"
+paperApi = "26.2.build.134-stable"
 # The Paper API the MockBukkit integration tests run on: the newest 26.2 build, matching
 # mockbukkit-v26.2 (see the mockbukkit library below).
-paperApiMockBukkit = "26.2.build.133-stable"
+paperApiMockBukkit = "26.2.build.134-stable"
 # BlueMapAPI 2.8.2 is the API BlueMap 5.29 targets (the "Targets" block of its release notes),
 # so a jar built against it matches the server's BlueMap.
 bluemapApi = "2.8.2"
